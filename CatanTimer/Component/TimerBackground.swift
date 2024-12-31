@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct TimerBackground: View {
-    @State private var progress: CGFloat = 1.0
-    @State private var timerRunning = false
     
-    var duration: TimeInterval // Duração do timer em segundos
+    var duration: TimeInterval
+    
+    @Binding var progress: CGFloat
+    @Binding var timerRunning: Bool
 
     var body: some View {
         ZStack {
@@ -22,39 +23,9 @@ struct TimerBackground: View {
                 .animation(.easeInOut(duration: 0.1), value: progress)
         }
         .ignoresSafeArea()
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                startTimer()
-            }
-        }
-    }
-
-    func startTimer() {
-        if timerRunning {
-            resetTimer()
-        } else {
-            timerRunning = true
-            let step: CGFloat = 0.01
-            var currentTime: TimeInterval = 0
-
-            Timer.scheduledTimer(withTimeInterval: step, repeats: true) { timer in
-                currentTime += step
-                progress = max(0, 1.0 - CGFloat(currentTime / duration))
-
-                if currentTime >= duration {
-                    timer.invalidate()
-                    timerRunning = false
-                }
-            }
-        }
-    }
-
-    func resetTimer() {
-        progress = 1.0
-        timerRunning = false
     }
 }
 
 #Preview {
-    TimerBackground(duration: 10)
+    TimerBackground(duration: 10, progress: .constant(1.0), timerRunning: .constant(false))
 }
